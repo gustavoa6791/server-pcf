@@ -1,0 +1,2 @@
+@extends('layouts.react')
+@section('script'){{ asset('js/login.js') }}@endsection
