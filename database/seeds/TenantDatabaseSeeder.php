@@ -1,6 +1,6 @@
 <?php
 
-use App\Permission;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
@@ -10,7 +10,8 @@ class TenantDatabaseSeeder extends Seeder
     {
         $this->addRolesAndPermissions();
     }
-    private function addRolesAndPermissions()
+
+    private function __addRolesAndPermissions()
     {
         // create permissions for an admin
         $adminPermissions = collect(['create user', 'edit user', 'delete user'])->map(function ($name) {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use App\User;
+use App\Models\User;
 use Carbon\Carbon;
 use Hyn\Tenancy\Environment;
 use Hyn\Tenancy\Models\Hostname;

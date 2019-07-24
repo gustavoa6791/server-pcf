@@ -1,25 +1,15 @@
 <?php
-
 namespace App\Console\Commands;
 
-use App\User;
 use App\Tenant;
 use Illuminate\Console\Command;
-use Hyn\Tenancy\Database\Connection;
 use App\Notifications\TenantCreated;
+use Hyn\Tenancy\Database\Connection;
 use Illuminate\Notifications\Notifiable;
 
 class CreateTenant extends Command
 {
-
     use Notifiable;
-
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'tenant:create';
 
     /**
      * The console command description.
@@ -27,6 +17,13 @@ class CreateTenant extends Command
      * @var string
      */
     protected $description = 'Easily create new tenant with redirect, https, maintenance options. Also with an administrator account.';
+
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'tenant:create';
 
     /**
      * Application base URL.
@@ -63,8 +60,6 @@ class CreateTenant extends Command
      */
     public function handle()
     {
-
-
         $this->info('Provide information to create new tenant.');
 
         $fqdn = $this->fqdn();
@@ -81,21 +76,68 @@ class CreateTenant extends Command
 
         $this->info('Creating tenant, please wait...');
         $this->output->progressStart(2);
-        $subdomain = $fqdn.'.'.$this->baseURL;
+        $subdomain = $fqdn . '.' . $this->baseURL;
         $website = Tenant::registerTenant($subdomain, $redirect, $https, $maintenance);
 
         $this->connection->set($website);
         $this->output->progressAdvance();
 
         $adminPassword = str_random();
-        Tenant::registerAdmin($name, $adminPassword, $email)->notify(new TenantCreated($subdomain));;
+        Tenant::registerAdmin($name, $adminPassword, $email)->notify(new TenantCreated($subdomain));
         $this->output->progressFinish();
 
-        $this->info("Tenant created!");
+        $this->info('Tenant created!');
         $this->info("Tenant address: {$fqdn}.{$this->baseURL}");
         $this->info("Administrator {$email} can sign in, using password: {$adminPassword}");
         $this->info("Admin {$email} has been invited!");
+    }
 
+    /**
+     * @param $fqdn
+     * @param $redirect
+     * @param $https
+     * @param $maintenance
+     * @param $name
+     * @param $email
+     */
+    private function confirmData($fqdn, $redirect, $https, $maintenance, $name, $email)
+    {
+        $this->info('Tenant information');
+        $this->info('------------');
+        $this->info("Tenant FQDN: {$fqdn}.{$this->baseURL}");
+        if ($redirect) {
+            $this->info("Redirect: {$redirect}");
+        }
+
+        if ($https) {
+            $this->info("Force HTTPS: {$https}");
+        }
+
+        if ($maintenance) {
+            $this->info("Under maintenance: {$maintenance}");
+        }
+
+        $this->info('');
+        $this->info("Administrator name: {$name}");
+        $this->info("Administrator email: {$email}");
+
+        if ($this->confirm('Do you want to create a tenant with this data?')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    private function forceHttps()
+    {
+        if ($this->confirm('You do want to force https?')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -112,13 +154,12 @@ class CreateTenant extends Command
         }
 
         if (empty($value)) {
-            $this->error("Tenant name cannot be empty.");
+            $this->error('Tenant name cannot be empty.');
 
             return $this->fqdn();
         }
 
         return $value;
-
     }
 
     /**
@@ -136,19 +177,6 @@ class CreateTenant extends Command
     }
 
     /**
-     * @return bool
-     */
-    private function forceHttps()
-    {
-        if ($this->confirm('You do want to force https?')) {
-            return true;
-        }
-
-        return false;
-
-    }
-
-    /**
      * @return bool|string
      */
     private function underMaintenance()
@@ -163,7 +191,7 @@ class CreateTenant extends Command
     }
 
     /**
-     * @param $name
+     * @param  $name
      * @return string
      */
     private function value($name)
@@ -178,33 +206,4 @@ class CreateTenant extends Command
 
         return $value;
     }
-
-    /**
-     * @param $fqdn
-     * @param $redirect
-     * @param $https
-     * @param $maintenance
-     * @param $name
-     * @param $email
-     */
-    private function confirmData($fqdn, $redirect, $https, $maintenance, $name, $email)
-    {
-        $this->info("Tenant information");
-        $this->info("------------");
-        $this->info("Tenant FQDN: {$fqdn}.{$this->baseURL}");
-        if ($redirect) $this->info("Redirect: {$redirect}");
-        if ($https) $this->info("Force HTTPS: {$https}");
-        if ($maintenance) $this->info("Under maintenance: {$maintenance}");
-        $this->info("");
-        $this->info("Administrator name: {$name}");
-        $this->info("Administrator email: {$email}");
-
-        if ($this->confirm('Do you want to create a tenant with this data?')) {
-            return true;
-        }
-
-        return false;
-
-    }
-
 }

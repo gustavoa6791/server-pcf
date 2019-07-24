@@ -1,14 +1,15 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request;
-use App\User;
 
 class LoginController extends Controller
 {
+    use AuthenticatesUsers;
+
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -20,7 +21,6 @@ class LoginController extends Controller
     |
      */
 
-    use AuthenticatesUsers;
     /**
      * Where to redirect users after login.
      *
@@ -43,7 +43,8 @@ class LoginController extends Controller
      *
      * @return string
      */
-    public function authenticated(Request $request, User $user) {
+    public function authenticated(Request $request, User $user)
+    {
         // var_export(func_get_args());
         return redirect()->intended($this->redirectTo);
     }
