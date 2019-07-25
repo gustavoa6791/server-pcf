@@ -13,9 +13,9 @@ return [
     |
     | Supported: "bcrypt", "argon", "argon2id"
     |
-    */
+     */
 
-    'driver' => 'bcrypt',
+    // 'driver' => 'bcrypt',
 
     /*
     |--------------------------------------------------------------------------
@@ -26,9 +26,9 @@ return [
     | passwords are hashed using the Bcrypt algorithm. This will allow you
     | to control the amount of time it takes to hash the given password.
     |
-    */
+     */
 
-    'bcrypt' => [
+    'bcrypt'  => [
         'rounds' => env('BCRYPT_ROUNDS', 10),
     ],
 
@@ -41,12 +41,27 @@ return [
     | passwords are hashed using the Argon algorithm. These will allow you
     | to control the amount of time it takes to hash the given password.
     |
-    */
+     */
 
-    'argon' => [
-        'memory' => 1024,
+    'argon'   => [
+        'memory'  => 1024,
         'threads' => 2,
-        'time' => 2,
+        'time'    => 2,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Symfony Options
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the configuration options that should be used when
+    | passwords are hashed using the Symfony algorithm. These will allow you
+    | to control the amount of time it takes to hash the given password.
+    |
+     */
+
+    'symfony' => [
+        'salt' => env('ENCRYPTION_SALT', 'IzTS7Gfgg9XnO3ns1cYJ'),
     ],
 
 ];

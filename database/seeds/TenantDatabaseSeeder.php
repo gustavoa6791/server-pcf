@@ -11,7 +11,7 @@ class TenantDatabaseSeeder extends Seeder
         $this->addRolesAndPermissions();
     }
 
-    private function __addRolesAndPermissions()
+    private function addRolesAndPermissions()
     {
         // create permissions for an admin
         $adminPermissions = collect(['create user', 'edit user', 'delete user'])->map(function ($name) {

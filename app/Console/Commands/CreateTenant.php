@@ -1,7 +1,7 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Tenant;
+use App\Models\Tenant;
 use Illuminate\Console\Command;
 use App\Notifications\TenantCreated;
 use Hyn\Tenancy\Database\Connection;
@@ -66,10 +66,11 @@ class CreateTenant extends Command
         $redirect = $this->redirect();
         $https = $this->forceHttps();
         $maintenance = $this->underMaintenance();
-        $name = $this->value('administrator name');
+        $username = 'admin';
         $email = $this->value('administrator email');
+        $adminPassword = $this->value('administrator password (leave blank to)', true, str_random());
 
-        if (!$this->confirmData($fqdn, $redirect, $https, $maintenance, $name, $email)) {
+        if (!$this->confirmData($fqdn, $redirect, $https, $maintenance, 'admin', $email)) {
             $this->error('Process terminated.');
             return false;
         }
@@ -82,14 +83,13 @@ class CreateTenant extends Command
         $this->connection->set($website);
         $this->output->progressAdvance();
 
-        $adminPassword = str_random();
-        Tenant::registerAdmin($name, $adminPassword, $email)->notify(new TenantCreated($subdomain));
+        Tenant::registerAdmin($adminPassword, $email)->notify(new TenantCreated($subdomain));
         $this->output->progressFinish();
 
         $this->info('Tenant created!');
         $this->info("Tenant address: {$fqdn}.{$this->baseURL}");
-        $this->info("Administrator {$email} can sign in, using password: {$adminPassword}");
-        $this->info("Admin {$email} has been invited!");
+        $this->info("Administrator sign in, using password: {$adminPassword}");
+        $this->info("Administrator has been invited!");
     }
 
     /**
@@ -97,10 +97,10 @@ class CreateTenant extends Command
      * @param $redirect
      * @param $https
      * @param $maintenance
-     * @param $name
+     * @param $username
      * @param $email
      */
-    private function confirmData($fqdn, $redirect, $https, $maintenance, $name, $email)
+    private function confirmData($fqdn, $redirect, $https, $maintenance, $username, $email)
     {
         $this->info('Tenant information');
         $this->info('------------');
@@ -118,7 +118,7 @@ class CreateTenant extends Command
         }
 
         $this->info('');
-        $this->info("Administrator name: {$name}");
+        $this->info("Administrator username: {$username}");
         $this->info("Administrator email: {$email}");
 
         if ($this->confirm('Do you want to create a tenant with this data?')) {
@@ -194,9 +194,15 @@ class CreateTenant extends Command
      * @param  $name
      * @return string
      */
-    private function value($name)
+    private function value($name, $secret = false, $default = null)
     {
-        $value = $this->ask("Please enter {$name}");
+        $value = null;
+        if  ($secret) {
+            $rawValue = $this->secret("Please enter {$name}");
+            $value = strlen(trim($rawValue)) === 0 ? $default : $rawValue;
+        } else {
+            $value = $this->ask("Please enter {$name}", $default);
+        }
 
         if (empty($value)) {
             $this->error("{$name} cannot be empty.");

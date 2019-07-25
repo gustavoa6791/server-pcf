@@ -48,4 +48,14 @@ class LoginController extends Controller
         // var_export(func_get_args());
         return redirect()->intended($this->redirectTo);
     }
+
+    /**
+     * Get the login username to be used by the controller.
+     *
+     * @return string
+     */
+    public function username()
+    {
+        return 'username';
+    }
 }

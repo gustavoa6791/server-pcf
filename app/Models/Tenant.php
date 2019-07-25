@@ -1,16 +1,13 @@
 <?php
-
 namespace App\Models;
 
-use App\Models\User;
 use Carbon\Carbon;
-use Hyn\Tenancy\Environment;
-use Hyn\Tenancy\Models\Hostname;
+use App\Models\User;
 use Hyn\Tenancy\Models\Website;
+use Hyn\Tenancy\Models\Hostname;
 use Illuminate\Support\Facades\Hash;
-use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
 use Hyn\Tenancy\Contracts\Repositories\WebsiteRepository;
-use Illuminate\Support\Facades\Config;
+use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
 
 /**
  * @property Website website
@@ -20,47 +17,76 @@ use Illuminate\Support\Facades\Config;
 
 class Tenant
 {
-    public function __construct()
-    {
-
-    }
-
+    public function __construct() {}
+    /**
+     * @param $fqdn
+     */
     public static function deleteTenant($fqdn)
     {
-
         if ($hostname = Hostname::where('fqdn', $fqdn)->with(['website'])->firstOrFail()) {
             $website = $hostname->website->first();
             app(HostnameRepository::class)->delete($hostname, true);
             app(WebsiteRepository::class)->delete($website, true);
         }
-
     }
 
-    public static function registerTenant($subdomain, $redirect, $https, $maintenance)
+    /**
+     * @param  $name
+     * @param  $password
+     * @param  $email
+     * @return mixed
+     */
+    public static function registerAdmin($password, $email)
     {
-        $website = new Website;
-        app(WebsiteRepository::class)->create($website);
-
-        $hostname = new Hostname;
-        $hostname->fqdn = $subdomain;
-        if ($redirect) $hostname->redirect_to = $redirect;
-        if ($https) $hostname->force_https = $https;
-        if ($maintenance) $hostname->under_maintenance_since = Carbon::parse($maintenance)->format('Y-m-d H:i:s');
-        $hostname->website()->associate($website);
-        app(HostnameRepository::class)->attach($hostname, $website);
-
-        return $website;
-    }
-
-    public static function registerAdmin($name, $password, $email)
-    {
-        $admin = User::create(['name' => $name, 'email' => $email, 'password' => bcrypt($password)]);
+        $salt  = str_random(20);
+        $admin = User::create([
+            'username' => 'admin',
+            'email'    => $email,
+            'salt'     => $salt,
+            'password' => Hash::make($password, ['salt' => $salt]),
+            'active'   => true,
+        ]);
         $admin->guard_name = 'web';
         $admin->assignRole('admin');
 
         return $admin;
     }
 
+    /**
+     * @param  $subdomain
+     * @param  $redirect
+     * @param  $https
+     * @param  $maintenance
+     * @return mixed
+     */
+    public static function registerTenant($subdomain, $redirect, $https, $maintenance)
+    {
+        $website = new Website();
+        app(WebsiteRepository::class)->create($website);
+
+        $hostname       = new Hostname();
+        $hostname->fqdn = $subdomain;
+        if ($redirect) {
+            $hostname->redirect_to = $redirect;
+        }
+
+        if ($https) {
+            $hostname->force_https = $https;
+        }
+
+        if ($maintenance) {
+            $hostname->under_maintenance_since = Carbon::parse($maintenance)->format('Y-m-d H:i:s');
+        }
+
+        $hostname->website()->associate($website);
+        app(HostnameRepository::class)->attach($hostname, $website);
+
+        return $website;
+    }
+
+    /**
+     * @param $fqdn
+     */
     public static function tenantExists($fqdn)
     {
         return Hostname::where('fqdn', $fqdn)->exists();

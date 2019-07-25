@@ -1,7 +1,7 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Tenant;
+use App\Models\Tenant;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 
