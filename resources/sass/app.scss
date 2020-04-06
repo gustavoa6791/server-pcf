@@ -1,11 +1,48 @@
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
-
-// Variables
-@import 'variables';
-
-// Bootstrap
-@import '~bootstrap/scss/bootstrap';
-
-// Vuetify
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icon');
+@import "~bootstrap/scss/bootstrap";
 @import '~vuetify/dist/vuetify.min.css';
+
+.conteiner {
+    display: flex;
+    flex-direction: column;
+    margin: 90px 15%;
+}
+
+.v-application--wrap {
+    min-height: 550px !important;
+}
+
+.titleinf {
+    font-size: 30px;
+}
+
+.v-card {
+    padding: 0 4%;
+}
+
+.v-card__title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.v-btn {
+    margin: 1%;
+}
+
+.filters {
+    display: flex;
+    width: 50%;
+}
+
+.filters>div {
+    margin: 3%;
+}
+
+.act {
+    display: flex;
+    justify-content: space-between;
+}
+
+.v-input--selection-controls {
+    margin-top: 0;
+}
