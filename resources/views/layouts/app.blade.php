@@ -17,6 +17,23 @@
 <body>
 
   <div id="app">
+
+   <v-app-bar fixed class="elevation-10">
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-img src="https://oplus.pacificmedicalsuite.com/pacific-saas/images/home/pms-logo.png" position="start" height = "35px"  contain ></v-img>
+      <v-spacer></v-spacer>
+    
+      <v-btn icon>
+        <v-icon>mdi-bell</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon>mdi-heart</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon x-large>mdi-account-circle</v-icon>
+      </v-btn>
+    </v-app-bar >
+{{-- 
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -66,7 +83,7 @@
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav> --}}
 
         <main class="py-4">
             @yield('content')

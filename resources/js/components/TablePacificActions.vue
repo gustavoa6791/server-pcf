@@ -19,12 +19,12 @@
     </v-card-title>
 
     <v-data-table :headers="headers" :items="profileTypes" :items-per-page="5" class="elevation-2">
-      <template v-slot:item.state="{ item }">
-        <div class="act" v-if="item.state">@
+      <template v-slot:item.status_description="{ item }">
+        <div class="act" v-if="item.status_description=='Activo'">
           <v-icon medium color="success">mdi-checkbox-blank-circle</v-icon>
         </div>
 
-        <div class="act" v-else>
+        <div class="act" v-if="item.status_description=='Inactivo'">
           <v-icon medium>mdi-checkbox-blank-circle</v-icon>
         </div>
       </template>
@@ -32,9 +32,11 @@
       <template v-slot:item.actions="{ item }">
         <div class="act">
           <v-switch
-            v-model="item.state"
+            v-model="item.status_description"
             @change="createEditProfileType(item) "
             color="success"
+            true-value= "Activo"
+            false-value= "Inactivo"
             hide-details
           ></v-switch>
           <v-icon medium @click="open('Editar tipo de perfil', item )">mdi-pencil</v-icon>
@@ -90,8 +92,10 @@
                   </v-row>
                   <v-row>
                     <v-switch
-                      v-model="editedItem.state"
-                      :label="`Estado: ${editedItem.state?'Activo':'No activo'}`"
+                      v-model="editedItem.status_description"
+                      true-value= "Activo"
+                      false-value= "Inactivo"
+                      :label="`Estado: ${editedItem.status_description=='Activo'?'Activo':'No activo'}`"
                     ></v-switch>
                   </v-row>
                 </v-col>
@@ -157,15 +161,16 @@ export default {
     formTitle: "",
     keys: [
       { text: "Todos", value: null },
-      { text: "Activo", value: true },
-      { text: "No activo", value: false }
+      { text: "Activo", value: 'Activo' },
+      { text: "No activo", value: 'Inactivo' }
     ],
     erroresFormulario: [
     ],
     editedItem: {
       name: "",
       description: "",
-      state: true,
+     
+      status_description: 'activo',
       lang: "es_co"
     },
     deleteItem:{
@@ -187,7 +192,7 @@ export default {
     },
 
     filterStateFunction(value) {
-      if (this.filterState == null) {
+      if (!this.filterState) {
         return true;
       }
       return value === this.filterState;
@@ -231,7 +236,7 @@ export default {
         id: item ? item.id : -1,
         name: item ? item.name : "",
         description: item ? item.description : "",
-        state: item ? item.state : true,
+        status_description: item ? item.status_description : 'Activo',
         lang: item ? item.lang : "es_co"
       };
       this.editedItem = defaultItem;
@@ -244,7 +249,7 @@ export default {
         id: item ? item.id : -1,
         name: item ? item.name : "",
         description: item ? item.description : "",
-        state: item ? item.state : true,
+        status_description: item ? item.status_description :'Activo',
         lang: item ? item.lang : "es_co"
       };
       this.editedItem = defaultItem;
@@ -275,7 +280,7 @@ export default {
           text: "Estado",
           align: "start",
           sortable: true,
-          value: "state",
+          value: "status_description",
           width: "10%",
           filter: this.filterStateFunction
         },

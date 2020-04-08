@@ -2062,6 +2062,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -2076,16 +2080,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         value: null
       }, {
         text: "Activo",
-        value: true
+        value: 'Activo'
       }, {
         text: "No activo",
-        value: false
+        value: 'Inactivo'
       }],
       erroresFormulario: [],
       editedItem: {
         name: "",
         description: "",
-        state: true,
+        status_description: 'activo',
         lang: "es_co"
       },
       deleteItem: {},
@@ -2104,7 +2108,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return value.toLowerCase().includes(this.filterSearch.toLowerCase());
     },
     filterStateFunction: function filterStateFunction(value) {
-      if (this.filterState == null) {
+      if (!this.filterState) {
         return true;
       }
 
@@ -2151,7 +2155,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         id: item ? item.id : -1,
         name: item ? item.name : "",
         description: item ? item.description : "",
-        state: item ? item.state : true,
+        status_description: item ? item.status_description : 'Activo',
         lang: item ? item.lang : "es_co"
       };
       this.editedItem = defaultItem;
@@ -2163,7 +2167,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         id: item ? item.id : -1,
         name: item ? item.name : "",
         description: item ? item.description : "",
-        state: item ? item.state : true,
+        status_description: item ? item.status_description : 'Activo',
         lang: item ? item.lang : "es_co"
       };
       this.editedItem = defaultItem;
@@ -2187,7 +2191,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "Estado",
         align: "start",
         sortable: true,
-        value: "state",
+        value: "status_description",
         width: "10%",
         filter: this.filterStateFunction
       }, {
@@ -37668,16 +37672,15 @@ var render = function() {
         },
         scopedSlots: _vm._u([
           {
-            key: "item.state",
+            key: "item.status_description",
             fn: function(ref) {
               var item = ref.item
               return [
-                item.state
+                item.status_description == "Activo"
                   ? _c(
                       "div",
                       { staticClass: "act" },
                       [
-                        _vm._v("@\n        "),
                         _c(
                           "v-icon",
                           { attrs: { medium: "", color: "success" } },
@@ -37686,7 +37689,10 @@ var render = function() {
                       ],
                       1
                     )
-                  : _c(
+                  : _vm._e(),
+                _vm._v(" "),
+                item.status_description == "Inactivo"
+                  ? _c(
                       "div",
                       { staticClass: "act" },
                       [
@@ -37696,6 +37702,7 @@ var render = function() {
                       ],
                       1
                     )
+                  : _vm._e()
               ]
             }
           },
@@ -37709,18 +37716,23 @@ var render = function() {
                   { staticClass: "act" },
                   [
                     _c("v-switch", {
-                      attrs: { color: "success", "hide-details": "" },
+                      attrs: {
+                        color: "success",
+                        "true-value": "Activo",
+                        "false-value": "Inactivo",
+                        "hide-details": ""
+                      },
                       on: {
                         change: function($event) {
                           return _vm.createEditProfileType(item)
                         }
                       },
                       model: {
-                        value: item.state,
+                        value: item.status_description,
                         callback: function($$v) {
-                          _vm.$set(item, "state", $$v)
+                          _vm.$set(item, "status_description", $$v)
                         },
-                        expression: "item.state"
+                        expression: "item.status_description"
                       }
                     }),
                     _vm._v(" "),
@@ -37874,18 +37886,26 @@ var render = function() {
                                 [
                                   _c("v-switch", {
                                     attrs: {
+                                      "true-value": "Activo",
+                                      "false-value": "Inactivo",
                                       label:
                                         "Estado: " +
-                                        (_vm.editedItem.state
+                                        (_vm.editedItem.status_description ==
+                                        "Activo"
                                           ? "Activo"
                                           : "No activo")
                                     },
                                     model: {
-                                      value: _vm.editedItem.state,
+                                      value: _vm.editedItem.status_description,
                                       callback: function($$v) {
-                                        _vm.$set(_vm.editedItem, "state", $$v)
+                                        _vm.$set(
+                                          _vm.editedItem,
+                                          "status_description",
+                                          $$v
+                                        )
                                       },
-                                      expression: "editedItem.state"
+                                      expression:
+                                        "editedItem.status_description"
                                     }
                                   })
                                 ],
@@ -92882,6 +92902,7 @@ var actions = {
   createProfileType: function createProfileType(_ref, pt) {
     var commit = _ref.commit;
     return axios.post('/api', pt).then(function (res) {
+      console.log(res.data);
       commit('CREATE_PROFILE_TYPE', res.data);
     })["catch"](function (err) {
       console.log(err);

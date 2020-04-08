@@ -2,6 +2,8 @@ let actions = {
     createProfileType({ commit }, pt) {
         return axios.post('/api', pt)
             .then(res => {
+                console.log(res.data);
+                
                 commit('CREATE_PROFILE_TYPE', res.data)
             }).catch(err => {
                 console.log(err)
