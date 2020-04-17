@@ -1,5 +1,7 @@
 let state = {
-    profileTypes: []
+    profileTypes: [],
+    slotTypes: [],
+    slotTypesDetails: [],
     
 }
 

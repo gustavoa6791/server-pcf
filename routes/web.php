@@ -9,10 +9,12 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 //
-Auth::routes();
+//Auth::routes();
 
-Route::get('/', "SsoGroupProfileTypeController@index");
-Route::get('/home', "SsoGroupProfileTypeController@index");
+Route::get('/', "HomeController@index");
+Route::get('/profileType', "HomeController@index");
+Route::get('/slotType', "HomeController@index");
+Route::get('slotTypeDetails', "HomeController@index");

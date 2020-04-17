@@ -3,10 +3,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SsoGroupProfileType extends Model
+class SchSlotType extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'sso_group_profile_type';
+    protected $table = 'sch_slot_type';
 }

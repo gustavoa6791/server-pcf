@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SsoGroupProfileTypeTr extends Model
+class SchSlotTypeTr extends Model
 {
     /**
      * @var mixed
@@ -13,5 +13,5 @@ class SsoGroupProfileTypeTr extends Model
     /**
      * @var string
      */
-    protected $table = 'sso_group_profile_type_tr';
+    protected $table = 'sch_slot_type_tr';
 }

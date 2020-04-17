@@ -1,10 +1,7 @@
 <template >
- 
-  <v-card class="elevation-10">
- 
-
+  <v-card class="elevation-10 conteiner" >
     <v-card-title>
-      <h1 class="titleinf">Lista de Perfiles</h1>
+      <h1 class="titleinf">Tipos de perfiles</h1>
       <div class="filters">
         <v-select v-model="filterState" :items="keys" label="Estado" single-line hide-details></v-select>
         <v-text-field
@@ -13,18 +10,17 @@
           label="Buscar"
           single-line
           hide-details
-          
         ></v-text-field>
       </div>
     </v-card-title>
 
     <v-data-table :headers="headers" :items="profileTypes" :items-per-page="5" class="elevation-2">
-      <template v-slot:item.status_description="{ item }">
-        <div class="act" v-if="item.status_description=='Activo'">
+      <template v-slot:item.gbl_status_id="{ item }">
+        <div class="act" v-if="item.gbl_status_id=='1'">
           <v-icon medium color="success">mdi-checkbox-blank-circle</v-icon>
         </div>
 
-        <div class="act" v-if="item.status_description=='Inactivo'">
+        <div class="act" v-if="item.gbl_status_id=='0'">
           <v-icon medium>mdi-checkbox-blank-circle</v-icon>
         </div>
       </template>
@@ -32,16 +28,15 @@
       <template v-slot:item.actions="{ item }">
         <div class="act">
           <v-switch
-            v-model="item.status_description"
+            v-model="item.gbl_status_id"
             @change="createEditProfileType(item) "
             color="success"
-            true-value= "Activo"
-            false-value= "Inactivo"
+            true-value="1"
+            false-value="0"
             hide-details
           ></v-switch>
           <v-icon medium @click="open('Editar tipo de perfil', item )">mdi-pencil</v-icon>
           <v-icon medium @click="opendelete(item)">mdi-delete</v-icon>
-  
         </div>
       </template>
 
@@ -92,10 +87,10 @@
                   </v-row>
                   <v-row>
                     <v-switch
-                      v-model="editedItem.status_description"
-                      true-value= "Activo"
-                      false-value= "Inactivo"
-                      :label="`Estado: ${editedItem.status_description=='Activo'?'Activo':'No activo'}`"
+                      v-model="editedItem.gbl_status_id"
+                      true-value="1"
+                      false-value="0"
+                      :label="`Estado: ${editedItem.gbl_status_id=='1'?'Activo':'No activo'}`"
                     ></v-switch>
                   </v-row>
                 </v-col>
@@ -121,25 +116,35 @@
     <template class="modal-delete">
       <v-dialog v-model="alertDelete" persistent max-width="400px">
         <v-card>
-          
-            <v-card-title>
-              <span class="headline">Borrar?</span>
-            </v-card-title>
+          <v-card-title>
+            <span class="headline">Borrar?</span>
+          </v-card-title>
 
-            <v-card-text>
-              Estas seguro de borrar este item?
-            </v-card-text>
+          <div class="ver" v-if="deleteItem.verify=='delete'">
+            <v-card-text>Estas seguro de borrar este tipo de perfil</v-card-text>
+          </div>
+          <div class="ver" v-if="deleteItem.verify=='perfil.activo'">
+            <v-card-text>Este tipo de Perfil no se puede borrar.Esta asignado a un perfil activo</v-card-text>
+          </div>
+          <div class="ver" v-if="deleteItem.verify=='perfil.noActivo'">
+            <v-card-text>Este tipo de perfil esta asignado a un perfil no activo. Esta seguro de borrarlo</v-card-text>
+          </div>
 
+          <div class="ver" v-if="deleteItem.verify=='perfil.activo'">
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closedelete">Entendido</v-btn>
+            </v-card-actions>
+          </div>
+
+          <div class="ver" v-else >
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closedelete">Cancelar</v-btn>
-              <v-btn
-                color="blue darken-1"
-                text
-                @click="deleteProfileType(deleteItem)"
-              >Borrar</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteProfileType(deleteItem)">Borrar</v-btn>
             </v-card-actions>
-       
+            
+          </div>
         </v-card>
       </v-dialog>
     </template>
@@ -161,22 +166,18 @@ export default {
     formTitle: "",
     keys: [
       { text: "Todos", value: null },
-      { text: "Activo", value: 'Activo' },
-      { text: "No activo", value: 'Inactivo' }
+      { text: "Activo", value: "1" },
+      { text: "No activo", value: "0" }
     ],
-    erroresFormulario: [
-    ],
+    erroresFormulario: [],
     editedItem: {
       name: "",
       description: "",
-     
-      status_description: 'activo',
-      lang: "es_co"
+      gbl_status_id: "1",
+      lang: "es_CO"
     },
-    deleteItem:{
-    },
-    validations: {
-    }
+    deleteItem: {},
+    validations: {}
   }),
 
   mounted() {
@@ -227,7 +228,7 @@ export default {
 
     deleteProfileType(pt) {
       this.$store.dispatch("deleteProfileType", pt);
-      this.alertDelete= false
+      this.alertDelete = false;
     },
 
     open(title, item) {
@@ -236,8 +237,8 @@ export default {
         id: item ? item.id : -1,
         name: item ? item.name : "",
         description: item ? item.description : "",
-        status_description: item ? item.status_description : 'Activo',
-        lang: item ? item.lang : "es_co"
+        gbl_status_id: item ? item.gbl_status_id : "1",
+        lang: item ? item.lang : "es_CO"
       };
       this.editedItem = defaultItem;
       this.formTitle = title;
@@ -249,8 +250,8 @@ export default {
         id: item ? item.id : -1,
         name: item ? item.name : "",
         description: item ? item.description : "",
-        status_description: item ? item.status_description :'Activo',
-        lang: item ? item.lang : "es_co"
+        gbl_status_id: item ? item.gbl_status_id : "1",
+        lang: item ? item.lang : "es_CO"
       };
       this.editedItem = defaultItem;
       this.formTitle = title;
@@ -262,14 +263,16 @@ export default {
     },
 
     opendelete(item) {
-      this.alertDelete= true
-      this.deleteItem= item
+      this.$store.dispatch("deleteVerifyProfileType", item).then(data => {
+        item.verify = data;
+        this.deleteItem = item;
+        this.alertDelete = true;
+      });
     },
-    
+
     closedelete() {
       this.alertDelete = false;
-    },
- 
+    }
   },
 
   computed: {
@@ -279,8 +282,8 @@ export default {
         {
           text: "Estado",
           align: "start",
-          sortable: true,
-          value: "status_description",
+          sortable: false,
+          value: "gbl_status_id",
           width: "10%",
           filter: this.filterStateFunction
         },
@@ -315,8 +318,21 @@ export default {
       if (this.erroresFormulario.name != undefined) {
         var json = JSON.parse(JSON.stringify(this.erroresFormulario.name));
         json.forEach(element => {
-          e.push(element);
-          console.log(e);
+          console.log(element);
+          switch (element) {
+            case "The name has already been taken.":
+              e.push("El nombre ya existe");
+              break;
+            case "The name field is required.":
+              e.push("El campo nombre es requerido");
+              break;
+            case "The name may not be greater than 50 characters.":
+              e.push("El nombre no puede tener más de 50 caracteres.");
+              break;
+            default:
+              e.push("ha ocurrido un error");
+              break;
+          }
         });
       }
       return e;
@@ -329,8 +345,18 @@ export default {
           JSON.stringify(this.erroresFormulario.description)
         );
         json.forEach(element => {
-          e.push(element);
-          console.log(e);
+          console.log(element);
+          switch (element) {
+            case "The description field is required.":
+              e.push("El campo descripciòn es requerido");
+              break;
+            case "The description may not be greater than 255 characters.":
+              e.push("El descripciòn no puede tener más de 255 caracteres.");
+              break;
+            default:
+              e.push("ha ocurrido un error");
+              break;
+          }
         });
       }
       return e;

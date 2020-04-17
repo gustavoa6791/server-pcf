@@ -10889,10 +10889,102 @@ a.text-dark:focus {
   }
 }
 
+.titleinf.slot {
+  font-size: 25px;
+  padding: 5px;
+  border-bottom: 1px rgba(0, 0, 0, 0.466) solid;
+  width: 50%;
+}
+
+.title-slot {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.164);
+  padding: 3px;
+  padding-left: 20px;
+  border-bottom-left-radius: 20px;
+  border-top-left-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title-slot > h4 {
+  margin: 0;
+}
+
+.title-slot > div > .v-icon {
+  margin-right: 15px;
+}
+
+.title-slot > h6 {
+  margin: 0;
+}
+
+.p-slot {
+  display: flex;
+  justify-content: space-between;
+}
+
+.sw-slot {
+  margin-right: 20px;
+  padding-top: 20px;
+}
+
+.text-slot {
+  margin: 10px;
+  padding: 10px;
+}
+
+.text-slot.pro {
+  margin: 0 3% 10px 10px;
+  padding: 0 3% 10px 10px;
+}
+
+.table-slot {
+  margin: 0 6%;
+  width: 85%;
+}
+
+.table-slot > thead {
+  background-color: rgba(0, 0, 0, 0.164);
+  border: 1px rgba(0, 0, 0, 0.247) solid;
+}
+
+.table-slot > thead > tr > td {
+  padding: 2px 10px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.table-slot > tbody > tr,
+.table-slot > tbody > tr > td {
+  padding: 2px 10px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  border: 1px rgba(0, 0, 0, 0.164) solid;
+}
+
 .conteiner {
   display: flex;
   flex-direction: column;
-  margin: 90px 15%;
+  margin: 50px 15%;
+}
+
+.conteiner.slot {
+  margin: 50px 25%;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  margin: 50px 15%;
+}
+
+.v-toolbar__content {
+  padding: 4px 50px;
+}
+
+.v-content {
+  padding-top: 50px !important;
 }
 
 .v-application--wrap {
@@ -10907,9 +10999,21 @@ a.text-dark:focus {
   padding: 0 4%;
 }
 
+.v-card.slot {
+  padding: 0;
+}
+
 .v-card__title {
   display: flex;
   justify-content: space-between;
+}
+
+.v-card__text {
+  padding-bottom: 0;
+}
+
+.v-card__text.slot {
+  padding: 0 0 0 4%;
 }
 
 .v-btn {
@@ -10932,5 +11036,15 @@ a.text-dark:focus {
 
 .v-input--selection-controls {
   margin-top: 0;
+}
+
+.col {
+  padding: 0 10px !important;
+}
+
+.encabezado {
+  margin: 15px;
+  width: 50%;
+  border-bottom: 1px #444242 solid;
 }
 

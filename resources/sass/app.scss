@@ -1,11 +1,29 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icon');
 @import "~bootstrap/scss/bootstrap";
 @import '~vuetify/dist/vuetify.min.css';
+@import './slotTypeDetails.scss';
 
 .conteiner {
     display: flex;
     flex-direction: column;
-    margin: 90px 15%;
+    margin: 50px 15%;
+}
+.conteiner.slot{
+ 
+    margin: 50px 25%;
+}
+
+.table {
+    display: flex;
+    flex-direction: column;
+    margin: 50px 15%;
+}
+.v-toolbar__content{
+    padding: 4px 50px;
+}
+
+.v-content{
+    padding-top: 50px !important;
 }
 
 .v-application--wrap {
@@ -19,11 +37,22 @@
 .v-card {
     padding: 0 4%;
 }
+.v-card.slot {
+    padding: 0 ;
+}
+
 
 .v-card__title {
     display: flex;
     justify-content: space-between;
 }
+.v-card__text {
+    padding-bottom: 0;
+}
+.v-card__text.slot {
+    padding: 0 0 0 4%;
+}
+
 
 .v-btn {
     margin: 1%;
@@ -45,4 +74,14 @@
 
 .v-input--selection-controls {
     margin-top: 0;
+}
+
+.col{
+    padding: 0 10px !important;
+}
+
+.encabezado{
+    margin: 15px;
+    width: 50%;
+    border-bottom: 1px rgb(68, 66, 66) solid;
 }

@@ -13,8 +13,42 @@ class SsoGroupProfileTypeController extends Controller
      */
     public function delete($id)
     {
+        $profile = 'sso_type_group_profile';
+
+        DB::table($profile)
+            ->where("$profile.sso_group_profile_type_id", '=', "$id")
+            ->delete();
+
         SsoGroupProfileTypetr::destroy($id);
         SsoGroupProfileType::destroy($id);
+
+        return response()->json("delete");
+
+    }
+
+    /**
+     * @param $id
+     */
+    public function deleteVerify($id)
+    {
+        $profile = 'sso_type_group_profile';
+
+        $data =
+        DB::table($profile)
+            ->where("$profile.sso_group_profile_type_id", '=', "$id")
+            ->select("$profile.*")
+            ->get();
+
+        if (count($data) > 0) {
+            foreach ($data as $value) {
+                if ($value->gbl_status_id == "1") {
+                    return response()->json("perfil.activo");
+                }
+
+            }
+
+            return response()->json("perfil.noActivo");
+        }
 
         return response()->json("delete");
     }
@@ -34,7 +68,7 @@ class SsoGroupProfileTypeController extends Controller
         $typestr = SsoGroupProfileTypetr::find($request['id']);
         $types = SsoGroupProfileType::find($request['id']);
 
-        $types->gbl_status_id = $request['status_description'] == 'Activo' ? 1 : 0;
+        $types->gbl_status_id = $request['gbl_status_id'];
         $types->updated_at = NOW();
         $types->save();
 
@@ -43,31 +77,21 @@ class SsoGroupProfileTypeController extends Controller
         $typestr->lang = $request['lang'];
         $typestr->save();
 
-        $typestr->status_description = $request['status_description'];
-
         return $request;
     }
 
     public function get()
     {
-        $types = 'sso_group_profile_types';
-        $typestr = 'sso_group_profile_type_trs';
-        $status = 'gbl_status';
-        $statustr = 'gbl_status_tr';
+        $types = 'sso_group_profile_type';
+        $typestr = 'sso_group_profile_type_tr';
+
         $data =
         DB::table($types)
             ->join($typestr, "$types.id", '=', "$typestr.id")
-            ->join($status, "$status.id", '=', "$types.gbl_status_id")
-            ->join($statustr, "$status.id", '=', "$statustr.id")
-            ->select("$typestr.*", "$types.created_at", "$types.updated_at", "$statustr.status_description")
+            ->select("$typestr.*", "$types.created_at", "$types.updated_at", "$types.gbl_status_id")
             ->get();
 
         return response()->json($data);
-    }
-
-    public function index()
-    {
-        return view('welcome');
     }
 
     /**
@@ -77,9 +101,8 @@ class SsoGroupProfileTypeController extends Controller
     public function store(Request $request)
     {
         $errors = $request->validate([
-            'name' => 'required|max:50|unique:sso_group_profile_type_trs',
+            'name' => 'required|max:50|unique:sso_group_profile_type_tr',
             'description' => 'required|max:255',
-
         ]);
 
         $types = new SsoGroupProfileType();
@@ -87,7 +110,7 @@ class SsoGroupProfileTypeController extends Controller
 
         $types->created_at = NOW();
         $types->updated_at = NOW();
-        $types->gbl_status_id = $request['status_description'] == 'Activo' ? 1 : 0;
+        $types->gbl_status_id = $request['gbl_status_id'];
         $types->created_by = 1;
         $types->save();
 
@@ -98,8 +121,9 @@ class SsoGroupProfileTypeController extends Controller
 
         $typestr->save();
 
-        $typestr->status_description = $request['status_description'];
+        $typestr->gbl_status_id = $request['gbl_status_id'];
 
         return $typestr;
     }
+
 }
