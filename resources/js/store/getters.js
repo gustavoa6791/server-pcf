@@ -7,6 +7,9 @@ let getters = {
     },
     slotTypesDetails: state => {
         return state.slotTypesDetails
+    },
+    attentionTypes: state => {
+        return state.attentionTypes
     }
 }
 

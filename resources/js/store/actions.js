@@ -48,7 +48,7 @@ let actions = {
      },
 
 
-     fetchSlotType({ commit }) {
+    fetchSlotType({ commit }) {
         axios.get('/api/slotType')
             .then(res => {
                 commit('FETCH_SLOT_TYPE', res.data)
@@ -56,6 +56,32 @@ let actions = {
                 console.log(err)
             })
     },
+    fetchService({ commit }) {
+       return axios.get('/api/service')
+            .then(res => {
+                return res.data
+            }).catch(err => {
+                console.log(err)
+            })
+    },
+    updateService({ commit },services) {
+        return axios.put(`/api/service/${services[0]}`, {services:services[1]})
+            .then(res => {
+                commit('UPDATE_SERVICE', res.data)
+            }).catch(err => {
+                console.log(err)
+            })
+     },
+     deleteService({ commit }, sv) {
+        axios.delete(`/api/service/${sv.id}`)
+            .then(res => {
+                if (res.data === 'delete'){
+                    commit('DELETE_SERVICE', sv)
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+     },
     findSlotType({ commit } , st) {
         return axios.get(`/api/slotType/${st}`)
             .then(res => {
@@ -65,10 +91,28 @@ let actions = {
                 console.log(err)
             })
     }, 
+    findAttentionType({ commit } , st) {
+        return axios.get(`/api/attentionType/${st}`)
+            .then(res => {
+                commit('FIND_ATTENTION_TYPE', res.data)
+                return res.data
+            }).catch(err => {
+                console.log(err)
+            })
+    }, 
     createSlotType({ commit }, st) {
         return axios.post('/api/slotType', st)
             .then(res => {
                 commit('CREATE_SLOT_TYPE', res.data)
+            }).catch(err => {
+                console.log(err)
+                return err.response.data.errors
+            })
+    },
+    createAttentionType({ commit }, st) {
+        return axios.post('/api/attentionType', st)
+            .then(res => {
+                commit('CREATE_ATTENTION_TYPE', res.data)
             }).catch(err => {
                 console.log(err)
                 return err.response.data.errors

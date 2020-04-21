@@ -18,3 +18,10 @@ Route::post('/slotType', 'SchSlotTypeController@store');
 Route::match(['put'], '/slotType/{id}', 'SchSlotTypeController@edit');
 Route::delete('/slotType/{id}', 'SchSlotTypeController@delete');
 Route::delete('/slotType/verify/{id}', 'SchSlotTypeController@deleteVerify');
+
+Route::get('/attentionType/{id}', 'SchAttentionTypeController@find');
+Route::post('/attentionType', 'SchAttentionTypeController@store');
+
+Route::get('/service', 'SchAttentionTypeController@getService');
+Route::match(['put'], '/service/{id}', 'SchAttentionTypeController@updateService');
+Route::delete('/service/{id}', 'SchAttentionTypeController@deleteService');

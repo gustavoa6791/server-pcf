@@ -9,4 +9,9 @@ class SchAttentionTypeTr extends Model
      * @var mixed
      */
     public $timestamps = false;
+
+    /**
+     * @var string
+     */
+    protected $table = 'sch_attention_type_tr';
 }
