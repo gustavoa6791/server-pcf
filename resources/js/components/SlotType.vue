@@ -29,18 +29,16 @@
         <div class="act">
           <v-switch
             v-model="item.gbl_status_id"
-            @change="createEditProfileType(item) "
+            @change=" editSLotType(item)"
             color="success"
             true-value="1"
             false-value="0"
             hide-details
           ></v-switch>
-          <router-link    :to="{ name: 'slottypedetails', params: { slot: item }}" >
+          <router-link :to="{ name: 'slottypedetails', params: { slot: item }}" >
             <v-icon large >mdi-eye</v-icon>
           </router-link>
-
-          <!-- <v-icon medium @click="open('Editar tipo de perfil', item )">mdi-pencil</v-icon>
-          <v-icon medium @click="opendelete(item)">mdi-delete</v-icon>-->
+          <v-icon medium @click="openDelete(item)">mdi-delete</v-icon>
         </div>
       </template>
 
@@ -178,10 +176,35 @@
               <v-btn
                 color="blue darken-1"
                 text
-                @click.prevent="createEditSlotType(editedItem)"
+                @click.prevent="createSlotType(editedItem)"
               >Agregar</v-btn>
             </v-card-actions>
           </form>
+        </v-card>
+      </v-dialog>
+    </template>
+    <!--  -->
+
+       <!-- modal -->
+    <template class="modal-delete">
+      <v-dialog v-model="alertDelete" persistent max-width="400px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Borrar?</span>
+          </v-card-title>
+
+          <div class="ver" >
+            <v-card-text>Estas seguro de borrar este tipo de Consulta</v-card-text>
+          </div>
+
+          <div class="ver"  >
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteSlotType(deleteItem)">Borrar</v-btn>
+            </v-card-actions>
+            
+          </div>
         </v-card>
       </v-dialog>
     </template>
@@ -199,6 +222,7 @@ export default {
   data: () => ({
   
     dialog: false,
+    alertDelete: false,
     filterSearch: "",
     filterState: null,
   
@@ -208,19 +232,7 @@ export default {
       { text: "No activo", value: "0" }
     ],
     erroresFormulario: [],
-    editedItem: {
-        id: "",
-        code: "",
-        description: "",
-        duration_default: "",
-        max_assign_allow: "",
-        gbl_status_id: "",
-        entity_name: "",
-        plan_name: "",
-        limit_attention: "",
-        reminder_email: "",
-        lang: "es_CO"
-    },
+    editedItem: {},
     deleteItem: {},
     validations: {}
   }),
@@ -244,7 +256,7 @@ export default {
       return value === this.filterState;
     },
 
-    createEditSlotType(pt) {
+    createSlotType(pt) {
       this.erroresFormulario = [];
      
         this.$store.dispatch("createSlotType", pt).then(data => {
@@ -259,10 +271,27 @@ export default {
         });
       
     },
+    editSLotType(item){
+      this.editedItem = item 
+      this.$store.dispatch("editSlotType", this.editedItem)
+
+    },
+
+    openDelete(item){
+      this.deleteItem = item
+      this.alertDelete = true
+    },
+
+    deleteSlotType(){
+      this.$store.dispatch("deleteSlotType", this.deleteItem)
+      this.alertDelete = false
+    },
+
+
 
     open() {
       this.erroresFormulario = [];
-      const defaultItem = {
+      this.editedItem = {
         id: -1,
         code: "",
         description: "",
@@ -276,13 +305,11 @@ export default {
         lang: "es_CO"
       };
 
-      this.editedItem = defaultItem;
-
       this.dialog = true;
     },
 
     reopen( item) {
-      const defaultItem = {
+      this.editedItem  = {
         id: item ? item.id : -1,
         code: item ? item.code : "",
         description: item ? item.description : "",
@@ -291,13 +318,14 @@ export default {
         duration_default: item ? item.duration_default : "",
         max_assign_allow: item ? item.max_assign_allow : ""
       };
-      this.editedItem = defaultItem;
+   
       this.formTitle = title;
       this.dialog = true;
     },
 
     close() {
       this.dialog = false;
+      this.alertDelete = false
     },
 
   },

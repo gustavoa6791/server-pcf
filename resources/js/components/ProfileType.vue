@@ -38,7 +38,7 @@
           <v-icon medium @click="open('Editar tipo de perfil', item )">mdi-pencil</v-icon>
           <v-icon medium @click="opendelete(item)">mdi-delete</v-icon>
         </div>
-      </template>
+      </template> 
 
       <template v-slot:no-data>
         <h5>No se encontraron datos</h5>

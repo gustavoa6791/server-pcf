@@ -11,6 +11,24 @@ class SchAttentionTypeController extends Controller
     /**
      * @param $id
      */
+    public function delete($id)
+    {
+        $typesAttentionService = 'sch_attention_type_service';
+
+        DB::table($typesAttentionService)
+            ->where("$typesAttentionService.sch_attention_type_id", '=', "$id")
+            ->delete();
+
+        SchAttentionTypetr::destroy($id);
+        SchAttentionType::destroy($id);
+
+        return response()->json("delete");
+
+    }
+
+    /**
+     * @param $id
+     */
     public function deleteService($id)
     {
         $typesAttentionService = 'sch_attention_type_service';
@@ -21,6 +39,35 @@ class SchAttentionTypeController extends Controller
 
         return response()->json("delete");
 
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function edit(Request $request)
+    {
+// $request->validate([
+
+//     'name' => 'required|max:50',
+
+//     'description' => 'required|max:255',
+
+        // ]);
+
+        $typestr = SchAttentionTypetr::find($request['id']);
+        $types = SchAttentionType::find($request['id']);
+
+        $types->updated_at = NOW();
+        $types->gbl_status_id = $request['gbl_status_id'];
+        $types->save();
+
+        $typestr->description = $request['description'];
+        $typestr->information_text = $request['information_text'];
+        $typestr->lang = $request['lang'];
+        $typestr->save();
+
+        return $request;
     }
 
     /**
@@ -74,7 +121,7 @@ class SchAttentionTypeController extends Controller
                 "$typesService.code",
                 "$typesService.description",
             )
-            ->get();
+            ->orderBy('id')->get();
 
         return response()->json($data);
 

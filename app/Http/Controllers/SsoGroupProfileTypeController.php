@@ -89,6 +89,7 @@ class SsoGroupProfileTypeController extends Controller
         DB::table($types)
             ->join($typestr, "$types.id", '=', "$typestr.id")
             ->select("$typestr.*", "$types.created_at", "$types.updated_at", "$types.gbl_status_id")
+            ->orderBy('id')
             ->get();
 
         return response()->json($data);

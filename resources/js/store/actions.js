@@ -72,7 +72,7 @@ let actions = {
                 console.log(err)
             })
      },
-     deleteService({ commit }, sv) {
+    deleteService({ commit }, sv) {
         axios.delete(`/api/service/${sv.id}`)
             .then(res => {
                 if (res.data === 'delete'){
@@ -81,7 +81,7 @@ let actions = {
             }).catch(err => {
                 console.log(err)
             })
-     },
+    },
     findSlotType({ commit } , st) {
         return axios.get(`/api/slotType/${st}`)
             .then(res => {
@@ -99,7 +99,19 @@ let actions = {
             }).catch(err => {
                 console.log(err)
             })
+    },
+    deleteAttentionType({ commit }, at) {
+        axios.delete(`/api/attentionType/${at.id}`)
+            .then(res => {
+                if (res.data === 'delete'){
+                    commit('DELETE_ATTENTION_TYPE', at)
+                }
+            }).catch(err => {
+                console.log(err)
+            })
     }, 
+
+    
     createSlotType({ commit }, st) {
         return axios.post('/api/slotType', st)
             .then(res => {
@@ -122,6 +134,16 @@ let actions = {
         return axios.put(`/api/slotType/${st.id}`, st)
             .then(res => {
                 commit('EDIT_SLOT_TYPE', res.data)
+            }).catch(err => {
+                console.log(err)
+                return err.response.data.errors
+            })
+    },
+
+    editAttentionType({ commit }, st) {
+        return axios.put(`/api/attentionType/${st.id}`, st)
+            .then(res => {
+                commit('EDIT_ATTENTION_TYPE', res.data)
             }).catch(err => {
                 console.log(err)
                 return err.response.data.errors

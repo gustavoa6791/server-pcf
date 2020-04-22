@@ -2496,11 +2496,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       dialog: false,
+      alertDelete: false,
       filterSearch: "",
       filterState: null,
       keys: [{
@@ -2514,19 +2538,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         value: "0"
       }],
       erroresFormulario: [],
-      editedItem: {
-        id: "",
-        code: "",
-        description: "",
-        duration_default: "",
-        max_assign_allow: "",
-        gbl_status_id: "",
-        entity_name: "",
-        plan_name: "",
-        limit_attention: "",
-        reminder_email: "",
-        lang: "es_CO"
-      },
+      editedItem: {},
       deleteItem: {},
       validations: {}
     };
@@ -2549,7 +2561,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return value === this.filterState;
     },
-    createEditSlotType: function createEditSlotType(pt) {
+    createSlotType: function createSlotType(pt) {
       var _this = this;
 
       this.erroresFormulario = [];
@@ -2565,9 +2577,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
     },
+    editSLotType: function editSLotType(item) {
+      this.editedItem = item;
+      this.$store.dispatch("editSlotType", this.editedItem);
+    },
+    openDelete: function openDelete(item) {
+      this.deleteItem = item;
+      this.alertDelete = true;
+    },
+    deleteSlotType: function deleteSlotType() {
+      this.$store.dispatch("deleteSlotType", this.deleteItem);
+      this.alertDelete = false;
+    },
     open: function open() {
       this.erroresFormulario = [];
-      var defaultItem = {
+      this.editedItem = {
         id: -1,
         code: "",
         description: "",
@@ -2580,11 +2604,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         reminder_email: "",
         lang: "es_CO"
       };
-      this.editedItem = defaultItem;
       this.dialog = true;
     },
     reopen: function reopen(item) {
-      var defaultItem = {
+      this.editedItem = {
         id: item ? item.id : -1,
         code: item ? item.code : "",
         description: item ? item.description : "",
@@ -2593,12 +2616,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         duration_default: item ? item.duration_default : "",
         max_assign_allow: item ? item.max_assign_allow : ""
       };
-      this.editedItem = defaultItem;
       this.formTitle = title;
       this.dialog = true;
     },
     close: function close() {
       this.dialog = false;
+      this.alertDelete = false;
     }
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(["slotTypes"]), {
@@ -3086,15 +3109,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       alertDelete: false,
+      alertDeleteAttention: false,
       dialog: false,
       AttentionForm: false,
       serviceForm: false,
@@ -3173,17 +3193,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };
       this.dialog = true;
     },
-    openAttention: function openAttention(item) {
-      this.formTitle = "Crear Tipo de Atenciòn";
+    openAttention: function openAttention(item, title) {
+      this.formTitle = title;
       this.editedItemAttention = {
-        id: -1,
+        id: item ? item.id : -1,
         idSlot: this.slotTypesDetails.id,
-        description: "",
-        information_text: "",
-        gbl_status_id: "1",
-        lang: "es_CO"
+        description: item ? item.description : "",
+        information_text: item ? item.information_text : "",
+        gbl_status_id: item ? item.gbl_status_id : "1",
+        lang: "es_CO",
+        services: item ? item.services : []
       };
       this.AttentionForm = true;
+    },
+    openDeleteAttention: function openDeleteAttention(item) {
+      this.deleteItem = item;
+      this.alertDeleteAttention = true;
+    },
+    deleteAttentionType: function deleteAttentionType() {
+      this.$store.dispatch("deleteAttentionType", this.deleteItem);
+      this.close();
     },
     openService: function openService(idAtte) {
       var _this3 = this;
@@ -3227,6 +3256,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.AttentionForm = false;
       this.serviceForm = false;
       this.alertDelete = false;
+      this.alertDeleteAttention = false;
       this.selectServices = [];
       this.services = [];
     }
@@ -39382,7 +39412,7 @@ var render = function() {
                       },
                       on: {
                         change: function($event) {
-                          return _vm.createEditProfileType(item)
+                          return _vm.editSLotType(item)
                         }
                       },
                       model: {
@@ -39410,6 +39440,19 @@ var render = function() {
                         ])
                       ],
                       1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-icon",
+                      {
+                        attrs: { medium: "" },
+                        on: {
+                          click: function($event) {
+                            return _vm.openDelete(item)
+                          }
+                        }
+                      },
+                      [_vm._v("mdi-delete")]
                     )
                   ],
                   1
@@ -39763,7 +39806,7 @@ var render = function() {
                           on: {
                             click: function($event) {
                               $event.preventDefault()
-                              return _vm.createEditSlotType(_vm.editedItem)
+                              return _vm.createSlotType(_vm.editedItem)
                             }
                           }
                         },
@@ -39776,6 +39819,82 @@ var render = function() {
                 1
               )
             ])
+          ],
+          1
+        )
+      ],
+      _vm._v(" "),
+      [
+        _c(
+          "v-dialog",
+          {
+            attrs: { persistent: "", "max-width": "400px" },
+            model: {
+              value: _vm.alertDelete,
+              callback: function($$v) {
+                _vm.alertDelete = $$v
+              },
+              expression: "alertDelete"
+            }
+          },
+          [
+            _c(
+              "v-card",
+              [
+                _c("v-card-title", [
+                  _c("span", { staticClass: "headline" }, [_vm._v("Borrar?")])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "ver" },
+                  [
+                    _c("v-card-text", [
+                      _vm._v("Estas seguro de borrar este tipo de Consulta")
+                    ])
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "ver" },
+                  [
+                    _c(
+                      "v-card-actions",
+                      [
+                        _c("v-spacer"),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { color: "blue darken-1", text: "" },
+                            on: { click: _vm.close }
+                          },
+                          [_vm._v("Cancelar")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { color: "blue darken-1", text: "" },
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteSlotType(_vm.deleteItem)
+                              }
+                            }
+                          },
+                          [_vm._v("Borrar")]
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
           ],
           1
         )
@@ -39953,24 +40072,16 @@ var render = function() {
                   "v-btn",
                   { attrs: { width: "25", height: "25", icon: "" } },
                   [
-                    _c("v-icon", { attrs: { medium: "" } }, [
-                      _vm._v("mdi-pencil")
-                    ])
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c(
-                  "v-btn",
-                  { attrs: { width: "25", height: "25", icon: "" } },
-                  [
                     _c(
                       "v-icon",
                       {
                         attrs: { medium: "" },
                         on: {
                           click: function($event) {
-                            return _vm.openAttention(_vm.slotTypesDetails)
+                            return _vm.openAttention(
+                              null,
+                              "Crear Tipo de Atenciòn"
+                            )
                           }
                         }
                       },
@@ -39986,33 +40097,79 @@ var render = function() {
           _vm._v(" "),
           _vm._l(_vm.attentionTypes, function(attention) {
             return _c("div", { key: attention.id }, [
-              _c(
-                "div",
-                { staticClass: "p-slot" },
-                [
-                  _c("b", { staticClass: "text-slot" }, [
-                    _vm._v(_vm._s(attention.description))
-                  ]),
-                  _vm._v(" "),
-                  _c("v-switch", {
-                    staticClass: "sw-slot",
-                    attrs: {
-                      color: "success",
-                      "true-value": "1",
-                      "false-value": "0",
-                      "hide-details": ""
-                    },
-                    model: {
-                      value: attention.gbl_status_id,
-                      callback: function($$v) {
-                        _vm.$set(attention, "gbl_status_id", $$v)
+              _c("div", { staticClass: "p-slot" }, [
+                _c("b", { staticClass: "text-slot" }, [
+                  _vm._v(_vm._s(attention.description))
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "controls-slot  type" },
+                  [
+                    _c("v-switch", {
+                      staticClass: "sw-slot",
+                      attrs: {
+                        color: "success",
+                        "true-value": "1",
+                        "false-value": "0",
+                        "hide-details": ""
                       },
-                      expression: "attention.gbl_status_id"
-                    }
-                  })
-                ],
-                1
-              ),
+                      on: {
+                        change: function($event) {
+                          return _vm.createAttention(attention)
+                        }
+                      },
+                      model: {
+                        value: attention.gbl_status_id,
+                        callback: function($$v) {
+                          _vm.$set(attention, "gbl_status_id", $$v)
+                        },
+                        expression: "attention.gbl_status_id"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { width: "25", height: "25", icon: "" },
+                        on: {
+                          click: function($event) {
+                            return _vm.openAttention(
+                              attention,
+                              "Editar Tipo de Atenciòn"
+                            )
+                          }
+                        }
+                      },
+                      [
+                        _c("v-icon", { attrs: { medium: "" } }, [
+                          _vm._v("mdi-pencil")
+                        ])
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { width: "25", height: "25", icon: "" },
+                        on: {
+                          click: function($event) {
+                            return _vm.openDeleteAttention(attention)
+                          }
+                        }
+                      },
+                      [
+                        _c("v-icon", { attrs: { medium: "" } }, [
+                          _vm._v("mdi-delete")
+                        ])
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ]),
               _vm._v(" "),
               _c("p", { staticClass: "text-slot pro" }, [
                 _vm._v(_vm._s(attention.information_text))
@@ -40571,6 +40728,82 @@ var render = function() {
                 1
               )
             ])
+          ],
+          1
+        )
+      ],
+      _vm._v(" "),
+      [
+        _c(
+          "v-dialog",
+          {
+            attrs: { persistent: "", "max-width": "400px" },
+            model: {
+              value: _vm.alertDeleteAttention,
+              callback: function($$v) {
+                _vm.alertDeleteAttention = $$v
+              },
+              expression: "alertDeleteAttention"
+            }
+          },
+          [
+            _c(
+              "v-card",
+              [
+                _c("v-card-title", [
+                  _c("span", { staticClass: "headline" }, [_vm._v("Borrar?")])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "ver" },
+                  [
+                    _c("v-card-text", [
+                      _vm._v("Estas seguro de borrar este tipo de Atenciòn")
+                    ])
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "ver" },
+                  [
+                    _c(
+                      "v-card-actions",
+                      [
+                        _c("v-spacer"),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { color: "blue darken-1", text: "" },
+                            on: { click: _vm.close }
+                          },
+                          [_vm._v("Cancelar")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { color: "blue darken-1", text: "" },
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteAttentionType(_vm.deleteItem)
+                              }
+                            }
+                          },
+                          [_vm._v("Borrar")]
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
           ],
           1
         )
@@ -99239,8 +99472,18 @@ var actions = {
       console.log(err);
     });
   },
-  createSlotType: function createSlotType(_ref12, st) {
+  deleteAttentionType: function deleteAttentionType(_ref12, at) {
     var commit = _ref12.commit;
+    axios["delete"]("/api/attentionType/".concat(at.id)).then(function (res) {
+      if (res.data === 'delete') {
+        commit('DELETE_ATTENTION_TYPE', at);
+      }
+    })["catch"](function (err) {
+      console.log(err);
+    });
+  },
+  createSlotType: function createSlotType(_ref13, st) {
+    var commit = _ref13.commit;
     return axios.post('/api/slotType', st).then(function (res) {
       commit('CREATE_SLOT_TYPE', res.data);
     })["catch"](function (err) {
@@ -99248,8 +99491,8 @@ var actions = {
       return err.response.data.errors;
     });
   },
-  createAttentionType: function createAttentionType(_ref13, st) {
-    var commit = _ref13.commit;
+  createAttentionType: function createAttentionType(_ref14, st) {
+    var commit = _ref14.commit;
     return axios.post('/api/attentionType', st).then(function (res) {
       commit('CREATE_ATTENTION_TYPE', res.data);
     })["catch"](function (err) {
@@ -99257,8 +99500,8 @@ var actions = {
       return err.response.data.errors;
     });
   },
-  editSlotType: function editSlotType(_ref14, st) {
-    var commit = _ref14.commit;
+  editSlotType: function editSlotType(_ref15, st) {
+    var commit = _ref15.commit;
     return axios.put("/api/slotType/".concat(st.id), st).then(function (res) {
       commit('EDIT_SLOT_TYPE', res.data);
     })["catch"](function (err) {
@@ -99266,8 +99509,17 @@ var actions = {
       return err.response.data.errors;
     });
   },
-  deleteSlotType: function deleteSlotType(_ref15, st) {
-    var commit = _ref15.commit;
+  editAttentionType: function editAttentionType(_ref16, st) {
+    var commit = _ref16.commit;
+    return axios.put("/api/attentionType/".concat(st.id), st).then(function (res) {
+      commit('EDIT_ATTENTION_TYPE', res.data);
+    })["catch"](function (err) {
+      console.log(err);
+      return err.response.data.errors;
+    });
+  },
+  deleteSlotType: function deleteSlotType(_ref17, st) {
+    var commit = _ref17.commit;
     return axios["delete"]("/api/slotType/".concat(st.id)).then(function (res) {
       if (res.data === 'delete') {
         commit('DELETE_SLOT_TYPE', st);
@@ -99278,8 +99530,8 @@ var actions = {
       console.log(err);
     });
   },
-  deleteVerifySlotType: function deleteVerifySlotType(_ref16, st) {
-    var commit = _ref16.commit;
+  deleteVerifySlotType: function deleteVerifySlotType(_ref18, st) {
+    var commit = _ref18.commit;
     return axios["delete"]("/api/slotType/verify/".concat(st.id)).then(function (res) {
       return res.data;
     })["catch"](function (err) {
@@ -99395,6 +99647,18 @@ var mutations = {
   },
   FIND_ATTENTION_TYPE: function FIND_ATTENTION_TYPE(state, st) {
     return state.attentionTypes = st;
+  },
+  DELETE_ATTENTION_TYPE: function DELETE_ATTENTION_TYPE(state, at) {
+    var index = state.attentionTypes.findIndex(function (item) {
+      return item.id === at.id;
+    });
+    state.attentionTypes.splice(index, 1);
+  },
+  EDIT_ATTENTION_TYPE: function EDIT_ATTENTION_TYPE(state, at) {
+    var index = state.attentionTypes.findIndex(function (item) {
+      return item.id === at.id;
+    });
+    state.attentionTypes.splice(index, 1, at);
   },
   UPDATE_SERVICE: function UPDATE_SERVICE(state, sv) {
     var index = state.attentionTypes.findIndex(function (item) {

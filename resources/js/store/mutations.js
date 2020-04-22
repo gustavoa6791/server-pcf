@@ -33,6 +33,18 @@ let mutations = {
     FIND_ATTENTION_TYPE(state, st) {
         return state.attentionTypes = st
     },
+
+    DELETE_ATTENTION_TYPE(state, at){
+        let index = state.attentionTypes.findIndex(item => item.id === at.id)
+        state.attentionTypes.splice(index, 1)
+
+    },
+
+    EDIT_ATTENTION_TYPE(state, at){
+        let index = state.attentionTypes.findIndex(item => item.id === at.id)
+        state.attentionTypes.splice(index, 1, at)
+    },
+
     UPDATE_SERVICE(state, sv){
         let index = state.attentionTypes.findIndex(item => item.id == sv[0])
         sv[1].forEach(element => {

@@ -10989,6 +10989,16 @@ a.text-dark:focus {
   padding: 0 10px;
 }
 
+.type {
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.type > .v-input {
+  padding: 0;
+}
+
 .conteiner {
   display: flex;
   flex-direction: column;

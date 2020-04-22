@@ -58,10 +58,7 @@
         <h6>Tipos de Atencion</h6>
         <div class="controls-slot">
           <v-btn width="25" height="25" icon>
-            <v-icon medium>mdi-pencil</v-icon>
-          </v-btn>
-          <v-btn width="25" height="25" icon>
-            <v-icon @click="openAttention(slotTypesDetails )" medium>mdi-plus-thick</v-icon>
+            <v-icon @click="openAttention(null,'Crear Tipo de Atenciòn')" medium>mdi-plus-thick</v-icon>
           </v-btn>
         </div>
       </div>
@@ -69,14 +66,25 @@
       <div v-for="attention in attentionTypes" :key="attention.id">
         <div class="p-slot">
           <b class="text-slot">{{attention.description}}</b>
-          <v-switch
+           <div class="controls-slot  type">
+                 <v-switch
             v-model="attention.gbl_status_id"
             class="sw-slot"
             color="success"
             true-value="1"
             false-value="0"
             hide-details
+            @change="createAttention(attention)"
           ></v-switch>
+          <v-btn @click="openAttention(attention,'Editar Tipo de Atenciòn')"  width="25" height="25" icon>
+          <v-icon medium >mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn @click="openDeleteAttention(attention)" width="25" height="25" icon>
+            <v-icon medium >mdi-delete</v-icon>
+          </v-btn>
+          
+           </div>
+      
         </div>
 
         <p class="text-slot pro">{{attention.information_text}}</p>
@@ -272,42 +280,29 @@
         </v-card>
       </v-dialog>
     </template>
-    <!--   
-    <template class="modal-delete">
-      <v-dialog v-model="alertDelete" persistent max-width="400px">
+  
+    <template class="modal-deleteAttention">
+      <v-dialog v-model="alertDeleteAttention" persistent max-width="400px">
         <v-card>
           <v-card-title>
             <span class="headline">Borrar?</span>
           </v-card-title>
 
-          <div class="ver" v-if="deleteItem.verify=='delete'">
-            <v-card-text>Estas seguro de borrar este tipo de perfil</v-card-text>
-          </div>
-          <div class="ver" v-if="deleteItem.verify=='perfil.activo'">
-            <v-card-text>Este tipo de Perfil no se puede borrar.Esta asignado a un perfil activo</v-card-text>
-          </div>
-          <div class="ver" v-if="deleteItem.verify=='perfil.noActivo'">
-            <v-card-text>Este tipo de perfil esta asignado a un perfil no activo. Esta seguro de borrarlo</v-card-text>
+          <div class="ver">
+            <v-card-text>Estas seguro de borrar este tipo de Atenciòn</v-card-text>
           </div>
 
-          <div class="ver" v-if="deleteItem.verify=='perfil.activo'">
+          <div class="ver" >
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closedelete">Entendido</v-btn>
-            </v-card-actions>
-          </div>
-
-          <div class="ver" v-else>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closedelete">Cancelar</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteProfileType(deleteItem)">Borrar</v-btn>
+              <v-btn color="blue darken-1" text @click="close">Cancelar</v-btn>
+              <v-btn color="blue darken-1" text @click="deleteAttentionType(deleteItem)">Borrar</v-btn>
             </v-card-actions>
           </div>
         </v-card>
       </v-dialog>
     </template>
-    -->
+    
 
     <!-- modal -->
     <template class="modal-createAttention">
@@ -341,6 +336,7 @@
                       true-value="1"
                       false-value="0"
                       :label="`Estado: ${editedItemAttention.gbl_status_id=='1'?'Activo':'No activo'}`"
+                   
                     ></v-switch>
                   </v-row>
                 </v-col>
@@ -430,6 +426,7 @@ import { mapGetters } from "vuex";
 export default {
   data: () => ({
     alertDelete: false,
+    alertDeleteAttention :false,
     dialog: false,
     AttentionForm: false,
     serviceForm: false,
@@ -506,17 +503,26 @@ export default {
       this.dialog = true;
     },
 
-    openAttention(item) {
-      this.formTitle = "Crear Tipo de Atenciòn";
+    openAttention(item , title) {
+      this.formTitle =  title ;
       this.editedItemAttention = {
-        id: -1,
+        id: item? item.id : -1,
         idSlot: this.slotTypesDetails.id,
-        description: "",
-        information_text: "",
-        gbl_status_id: "1",
-        lang: "es_CO"
+        description: item? item.description : "",
+        information_text: item? item.information_text : "",
+        gbl_status_id: item? item.gbl_status_id : "1",
+        lang: "es_CO",
+        services: item? item.services : []
       };
       this.AttentionForm = true;
+    },
+    openDeleteAttention(item){
+      this.deleteItem = item
+      this.alertDeleteAttention= true
+    },
+    deleteAttentionType(){
+      this.$store.dispatch("deleteAttentionType",this.deleteItem)
+      this.close()
     },
 
     openService(idAtte) {
@@ -560,6 +566,7 @@ export default {
       this.AttentionForm = false;
       this.serviceForm = false;
       this.alertDelete = false
+      this.alertDeleteAttention = false
       this.selectServices = []
       this.services = []
     }

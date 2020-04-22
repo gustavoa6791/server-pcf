@@ -21,6 +21,8 @@ Route::delete('/slotType/verify/{id}', 'SchSlotTypeController@deleteVerify');
 
 Route::get('/attentionType/{id}', 'SchAttentionTypeController@find');
 Route::post('/attentionType', 'SchAttentionTypeController@store');
+Route::delete('/attentionType/{id}', 'SchAttentionTypeController@delete');
+Route::match(['put'], '/attentionType/{id}', 'SchAttentionTypeController@edit');
 
 Route::get('/service', 'SchAttentionTypeController@getService');
 Route::match(['put'], '/service/{id}', 'SchAttentionTypeController@updateService');

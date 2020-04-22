@@ -9,6 +9,38 @@ use Illuminate\Support\Facades\DB;
 class SchSlotTypeController extends Controller
 {
     /**
+     * @param $id
+     */
+    public function delete($id)
+    {
+        $typesrm = 'sch_slot_type_reminder';
+        $typesAttention = 'sch_attention_type';
+        $typesAttentionTr = 'sch_attention_type_tr';
+        $typesAttentionServices = 'sch_attention_type_service';
+
+        DB::table($typesrm)
+            ->where("$typesrm.id", '=', "$id")
+            ->delete();
+        DB::table($typesAttentionTr)
+            ->join("$typesAttention", "$typesAttentionTr.id", '=', "$typesAttention.id")
+            ->where("$typesAttention.sch_slot_type_id", '=', "$id")
+            ->delete();
+        DB::table($typesAttentionServices)
+            ->join("$typesAttention", "$typesAttentionServices.sch_attention_type_id", '=', "$typesAttention.id")
+            ->where("$typesAttention.sch_slot_type_id", '=', "$id")
+            ->delete();
+        DB::table($typesAttention)
+            ->where("$typesAttention.sch_slot_type_id", '=', "$id")
+            ->delete();
+
+        SchSlotTypetr::destroy($id);
+        SchSlotType::destroy($id);
+
+        return response()->json("delete");
+
+    }
+
+    /**
      * @param Request $request
      * @return mixed
      */
@@ -99,7 +131,7 @@ class SchSlotTypeController extends Controller
         $typesplan = 'cnt_plan';
         $typesgbl = 'gbl_entity';
 
-        $query =
+        $data =
         DB::table($types)
             ->join($typestr, "$types.id", '=', "$typestr.id")
             ->join($typesrm, "$types.id", '=', "$typesrm.id")
@@ -118,8 +150,8 @@ class SchSlotTypeController extends Controller
                 "$typesplan.plan_name",
                 "$typesgbl.entity_name",
 
-            );
-        $data = $query->get();
+            )
+            ->orderBy('id')->get();
 
         return response()->json($data);
     }

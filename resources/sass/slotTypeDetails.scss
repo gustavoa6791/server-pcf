@@ -102,3 +102,12 @@
     align-items: center;
     padding: 0 10px;
 }
+.type{
+    padding-top: 20px;
+    display: flex;
+    align-items: center;
+}
+.type>.v-input{
+    padding: 0;
+}
+
