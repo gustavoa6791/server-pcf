@@ -9,7 +9,6 @@ import router from './router'
 
 Vue.use(Vuetify);
 
-
 Vue.component('pacific-app', require('./views/App.vue').default)
 
 const app = new Vue({
@@ -17,4 +16,5 @@ const app = new Vue({
     el: '#app',
     store,
     router,
+    
 });

@@ -10999,6 +10999,54 @@ a.text-dark:focus {
   padding: 0;
 }
 
+.v-btn--icon.v-size--default {
+  height: 20px;
+  width: 20px;
+}
+
+.v-btn--icon.v-size--default > .v-btn__content {
+  height: 10px;
+  width: 10px;
+}
+
+.table-template > .v-data-table__wrapper > table {
+  table-layout: fixed;
+}
+
+.table-template > .v-data-table__wrapper > table > thead > tr > th,
+.table-template > .v-data-table__wrapper > table > tbody > tr > td {
+  table-layout: fixed;
+  padding: 10px;
+}
+
+.headStructure {
+  display: flex;
+  justify-content: space-between;
+  max-width: 40%;
+  align-items: center;
+}
+
+.table-structure > .v-data-table__wrapper > table {
+  table-layout: fixed;
+}
+
+.table-structure > .v-data-table__wrapper > table > thead > tr > th,
+.table-structure > .v-data-table__wrapper > table > tbody > tr > td {
+  table-layout: fixed;
+}
+
+.table-structure > .v-data-table__wrapper > table > thead > tr > th {
+  height: 0;
+}
+
+.tab-structure {
+  padding: 0 !important;
+}
+
+.show-text {
+  padding: 0 0 20px 24px !important;
+}
+
 .conteiner {
   display: flex;
   flex-direction: column;
@@ -11042,6 +11090,7 @@ a.text-dark:focus {
 .v-card__title {
   display: flex;
   justify-content: space-between;
+  padding: 0;
 }
 
 .v-card__text {
@@ -11068,6 +11117,7 @@ a.text-dark:focus {
 .act {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .v-input--selection-controls {

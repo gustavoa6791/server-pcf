@@ -10,6 +10,9 @@ let getters = {
     },
     attentionTypes: state => {
         return state.attentionTypes
+    },
+    orgStructure: state => {
+        return state.orgStructure
     }
 }
 

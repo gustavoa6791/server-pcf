@@ -17,4 +17,5 @@
 Route::get('/', "HomeController@index");
 Route::get('/profileType', "HomeController@index");
 Route::get('/slotType', "HomeController@index");
-Route::get('slotTypeDetails', "HomeController@index");
+Route::get('/slotTypeDetails', "HomeController@index");
+Route::get('/organizationalStructure', "HomeController@index");

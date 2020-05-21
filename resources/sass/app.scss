@@ -2,6 +2,7 @@
 @import "~bootstrap/scss/bootstrap";
 @import '~vuetify/dist/vuetify.min.css';
 @import './slotTypeDetails.scss';
+@import './orgStructure.scss';
 
 .conteiner {
     display: flex;
@@ -45,6 +46,7 @@
 .v-card__title {
     display: flex;
     justify-content: space-between;
+    padding: 0;
 }
 .v-card__text {
     padding-bottom: 0;
@@ -70,6 +72,7 @@
 .act {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .v-input--selection-controls {

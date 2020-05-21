@@ -1,5 +1,5 @@
 <template >
-  <v-card class="elevation-10 conteiner" >
+  <v-card class="elevation-10 conteiner">
     <v-card-title>
       <h1 class="titleinf">Tipos de perfiles</h1>
       <div class="filters">
@@ -14,7 +14,13 @@
       </div>
     </v-card-title>
 
-    <v-data-table :headers="headers" :items="profileTypes" :items-per-page="5" class="elevation-2">
+    <v-data-table
+      v-bind="lang"
+      :headers="headers"
+      :items="profileTypes"
+      :items-per-page="5"
+      class="elevation-2"
+    >
       <template v-slot:item.gbl_status_id="{ item }">
         <div class="act" v-if="item.gbl_status_id=='1'">
           <v-icon medium color="success">mdi-checkbox-blank-circle</v-icon>
@@ -38,7 +44,7 @@
           <v-icon medium @click="open('Editar tipo de perfil', item )">mdi-pencil</v-icon>
           <v-icon medium @click="opendelete(item)">mdi-delete</v-icon>
         </div>
-      </template> 
+      </template>
 
       <template v-slot:no-data>
         <h5>No se encontraron datos</h5>
@@ -90,6 +96,7 @@
                       v-model="editedItem.gbl_status_id"
                       true-value="1"
                       false-value="0"
+                      color="success"
                       :label="`Estado: ${editedItem.gbl_status_id=='1'?'Activo':'No activo'}`"
                     ></v-switch>
                   </v-row>
@@ -137,13 +144,12 @@
             </v-card-actions>
           </div>
 
-          <div class="ver" v-else >
+          <div class="ver" v-else>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closedelete">Cancelar</v-btn>
               <v-btn color="blue darken-1" text @click="deleteProfileType(deleteItem)">Borrar</v-btn>
             </v-card-actions>
-            
           </div>
         </v-card>
       </v-dialog>
@@ -159,6 +165,15 @@ import { mapGetters } from "vuex";
 
 export default {
   data: () => ({
+    lang :{
+      'footer-props':{ 
+        'items-per-page-options': [5, 10, 20, -1],
+        'items-per-page-text': 'Resultado por pagina:',
+        'items-per-page-all-text': 'Todo',
+        'page-text':'{0}-{1} de {2}'},
+      'no-results-text': 'No se encontraron resultados',
+      'no-data-text': "No se encontraron datos"
+    },
     alertDelete: false,
     dialog: false,
     filterSearch: "",
@@ -311,7 +326,7 @@ export default {
           width: "20%"
         }
       ];
-    },
+    }, 
 
     nameErrors() {
       var e = [];

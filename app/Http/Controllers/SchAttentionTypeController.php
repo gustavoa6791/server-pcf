@@ -47,19 +47,19 @@ class SchAttentionTypeController extends Controller
      */
     public function edit(Request $request)
     {
-// $request->validate([
-
-//     'name' => 'required|max:50',
-
-//     'description' => 'required|max:255',
-
-        // ]);
-
         $typestr = SchAttentionTypetr::find($request['id']);
         $types = SchAttentionType::find($request['id']);
 
+        $typestr['description'] != $request['description'] ?
+        $request->validate(['description' => 'unique:sch_attention_type_tr']) : "";
+
+        $request->validate([
+            'description' => 'required|max:250',
+        ]);
+
         $types->updated_at = NOW();
         $types->gbl_status_id = $request['gbl_status_id'];
+        $types->template_id = $request['template']['id'];
         $types->save();
 
         $typestr->description = $request['description'];
@@ -80,22 +80,26 @@ class SchAttentionTypeController extends Controller
 
         $typesAttentionService = 'sch_attention_type_service';
         $typesService = 'cnt_service_catalog_item';
+        $typestemplate = 'ehr_template_vr';
+        $typestemplatetr = 'ehr_template_vr_tr';
 
         $data =
-            json_decode(DB::table($types)
-                ->join($typestr, "$types.id", '=', "$typestr.id")
-                ->where("$types.sch_slot_type_id", '=', "$id")
-                ->where("$typestr.lang", '=', 'es_CO')
-                ->select("$typestr.*",
-                    "$types.created_at",
-                    "$types.updated_at",
-                    "$types.gbl_status_id",
-                )
-                ->get()->toJson(), true);
+        DB::table($types)
+            ->join($typestr, "$types.id", '=', "$typestr.id")
+            ->where("$types.sch_slot_type_id", '=', "$id")
+            ->where("$typestr.lang", '=', 'es_CO')
+            ->select("$typestr.*",
+                "$types.created_at",
+                "$types.updated_at",
+                "$types.gbl_status_id",
+                "$types.template_id"
+            )
+            ->get();
 
-        for ($i = 0; $i < count($data); $i++) {
-            $iddata = $data[$i]['id'];
-            $data[$i]['services'] =
+        foreach ($data as $item) {
+            $iddata = $item->id;
+            $idtemplate = $item->template_id;
+            $item->services =
             DB::table($typesAttentionService)
                 ->join($typesService, "$typesAttentionService.cnt_service_catalog_item_id", '=', "$typesService.id")
                 ->where("$typesAttentionService.sch_attention_type_id", '=', "$iddata")
@@ -105,6 +109,18 @@ class SchAttentionTypeController extends Controller
                     "$typesService.description",
                 )
                 ->get();
+            $template =
+            DB::table($typestemplate)
+                ->join($typestemplatetr, "$typestemplate.id", '=', "$typestemplatetr.id")
+                ->where("$typestemplate.id", '=', "$idtemplate")
+                ->select(
+                    "$typestemplate.id",
+                    "$typestemplatetr.title",
+                    "$typestemplatetr.description",
+                )
+                ->get();
+
+            $item->template = $template[0];
         }
 
         return response()->json($data);
@@ -127,6 +143,42 @@ class SchAttentionTypeController extends Controller
 
     }
 
+    public function getTemplate()
+    {
+        $types = 'ehr_template_vr';
+        $typestr = 'ehr_template_vr_tr';
+        $typesgbl = 'gbl_ehr_template';
+        $typesgroup = 'ehr_group_template';
+        $typesimages = 'ehr_template_vr_images';
+
+        $data =
+        DB::table($types)
+            ->join($typestr, "$types.id", "=", "$typestr.id")
+            ->leftJoin($typesgbl, "$types.id", "=", "$typesgbl.ehr_template_vr_id")
+            ->leftJoin($typesgroup, "$typesgbl.ehr_group_template_id", "=", "$typesgroup.id")
+            ->select(
+                "$types.id",
+                "$typestr.title",
+                "$typestr.description",
+                "$typesgroup.name",
+            )->orderBy('id')->get();
+
+        foreach ($data as $item) {
+            $iddata = $item->id;
+            $item->images =
+            DB::table($typesimages)
+                ->where("$typesimages.ehr_template_vr_id", '=', "$iddata")
+                ->select(
+                    "$typesimages.id",
+                    "$typesimages.pic_default",
+                    "$typesimages.picture",
+                )
+                ->orderBy('pic_default', 'DESC')->get();
+        }
+
+        return response()->json($data);
+    }
+
     /**
      * @param Request $request
      * @return mixed
@@ -136,12 +188,16 @@ class SchAttentionTypeController extends Controller
         $types = new SchAttentionType();
         $typestr = new SchAttentionTypetr();
 
+        $request->validate([
+            'description' => 'required|max:250|unique:sch_attention_type_tr',
+        ]);
+
         $types->created_at = NOW();
         $types->updated_at = NOW();
         $types->gbl_status_id = $request['gbl_status_id'];
+        $types->template_id = $request['template']['id'];
         $types->sch_slot_type_id = $request['idSlot'];
         $types->is_default = true;
-        $types->template_id = "1";
         $types->contrib_type_id = "AMB";
         $types->reserve = false;
         $types->save();
@@ -169,20 +225,19 @@ class SchAttentionTypeController extends Controller
         $typesAttentionService = 'sch_attention_type_service';
         $typesService = 'cnt_service_catalog_item';
 
-        for ($i = 0; $i < count($request['services']); $i++) {
+        foreach ($request->services as $item) {
             DB::table($typesAttentionService)
                 ->insert([
                     'sch_attention_type_id' => $id,
-                    'cnt_service_catalog_item_id' => $request['services'][$i]['id'],
+                    'cnt_service_catalog_item_id' => $item['id'],
                     'gbl_status_id' => "1",
                     'created_at' => NOW(),
                     'updated_at' => NOW(),
                     'created_by' => "1",
-
                 ]);
         }
 
-        $data = [$id, $request['services']];
+        $data = [$id, $request->services];
 
         return $data;
 

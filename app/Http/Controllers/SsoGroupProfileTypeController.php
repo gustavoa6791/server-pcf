@@ -59,14 +59,16 @@ class SsoGroupProfileTypeController extends Controller
      */
     public function edit(Request $request)
     {
-        $request->validate([
-            'name' => 'required|max:50',
-            'description' => 'required|max:255',
-
-        ]);
-
         $typestr = SsoGroupProfileTypetr::find($request['id']);
         $types = SsoGroupProfileType::find($request['id']);
+
+        $typestr['name'] != $request['name'] ?
+        $request->validate(['name' => 'unique:sso_group_profile_type_tr']) : "";
+
+        $request->validate([
+            'name' => 'required|max:50',
+            'description' => 'max:255',
+        ]);
 
         $types->gbl_status_id = $request['gbl_status_id'];
         $types->updated_at = NOW();

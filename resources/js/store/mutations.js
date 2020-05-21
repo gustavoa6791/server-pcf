@@ -21,25 +21,32 @@ let mutations = {
     CREATE_SLOT_TYPE(state, st) {
         state.slotTypes.unshift(st)
     },
-    CREATE_ATTENTION_TYPE(state, st) {
-        state.attentionTypes.unshift(st)
-    },
     FETCH_SLOT_TYPE(state, st) {
         return state.slotTypes = st
     },
     FIND_SLOT_TYPE(state, st) {
         return state.slotTypesDetails = st[0]
     },
+    DELETE_SLOT_TYPE(state, st) {
+        let index = state.slotTypes.findIndex(item => item.id === st.id)
+        state.slotTypes.splice(index, 1)
+    },
+    EDIT_SLOT_TYPE(state, st){
+        state.slotTypesDetails = st
+    },
+
+    
+    CREATE_ATTENTION_TYPE(state, st) {
+        state.attentionTypes.unshift(st)
+    },
     FIND_ATTENTION_TYPE(state, st) {
         return state.attentionTypes = st
     },
-
     DELETE_ATTENTION_TYPE(state, at){
         let index = state.attentionTypes.findIndex(item => item.id === at.id)
         state.attentionTypes.splice(index, 1)
 
     },
-
     EDIT_ATTENTION_TYPE(state, at){
         let index = state.attentionTypes.findIndex(item => item.id === at.id)
         state.attentionTypes.splice(index, 1, at)
@@ -56,18 +63,18 @@ let mutations = {
         let indexSV = state.attentionTypes[index]['services'].findIndex(item => item.id === sv.id)
         state.attentionTypes[index]['services'].splice(indexSV, 1)
     },
-    SEARCH_SLOT_TYPE(state, st) {
-        return state.slotTypes = st
+
+    FETCH_ORG_STRUCTURE(state, os) {
+        return state.orgStructure = os
     },
-    DELETE_SLOT_TYPE(state, st) {
-        let index = state.slotTypes.findIndex(item => item.id === st.id)
-        state.slotTypes.splice(index, 1)
+    CREATE_ORG_STRUCTURE(state, os) {
+        state.orgStructure.unshift(os)
     },
-    EDIT_SLOT_TYPE(state, st){
-        state.slotTypesDetails = st
-        
-       
-    }
+    EDIT_ORG_STRUCTURE(state, os){
+        let index = state.orgStructure.findIndex(item => item.id === os.id)
+        state.orgStructure.splice(index, 1, os)
+    },
+
 
 }
 export default mutations

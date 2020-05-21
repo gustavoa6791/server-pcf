@@ -1,0 +1,28 @@
+
+.headStructure{
+    display: flex;
+    justify-content: space-between;
+    max-width: 40%;
+    align-items: center;
+}
+
+.table-structure>.v-data-table__wrapper>table {
+    table-layout: fixed;
+}
+
+.table-structure>.v-data-table__wrapper>table>thead>tr>th,
+.table-structure>.v-data-table__wrapper>table>tbody>tr>td {
+    table-layout: fixed;
+    
+}
+.table-structure>.v-data-table__wrapper>table>thead>tr>th{
+    height: 0;
+}
+
+.tab-structure{
+    padding: 0 !important;
+}
+
+.show-text{
+    padding: 0 0 20px 24px !important;
+}
