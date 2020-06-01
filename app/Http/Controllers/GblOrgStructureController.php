@@ -69,6 +69,28 @@ class GblOrgStructureController extends Controller
     }
 
     /**
+     * @param $id
+     */
+    public function deletePermission($id)
+    {
+        $typesallow = 'gbl_org_structure_allow';
+        DB::table($typesallow)->where("id", "=", $id)->delete();
+
+        return 'delete';
+    }
+
+    /**
+     * @param $id
+     */
+    public function deletePermissionAttention($id)
+    {
+        $typesallow = 'gbl_attention_point_allow';
+        DB::table($typesallow)->where("id", "=", $id)->delete();
+
+        return 'delete';
+    }
+
+    /**
      * @param Request $request
      */
     public function edit(Request $request)
@@ -167,6 +189,7 @@ class GblOrgStructureController extends Controller
         $typesatetr = 'gbl_attention_point_tr';
         $typesadmate = 'gbl_admission_attention_point';
         $typesallow = 'gbl_org_structure_allow';
+        $typesallowAttention = 'gbl_attention_point_allow';
         $typesaccount = 'gbl_account_user';
         $typesuser = 'gbl_user';
         $typesentity = 'gbl_entity';
@@ -180,42 +203,52 @@ class GblOrgStructureController extends Controller
             ->get();
 
         foreach ($data as $item) {
-            $iddata = $item->id;
+            $idsede = $item->id;
+
+            $item->permission =
+            DB::table($typesallow)
+                ->where('gbl_org_structure_id', $idsede)
+                ->join($typesaccount, "$typesallow.gbl_account_user_id", '=', "$typesaccount.id")
+                ->join($typesuser, "$typesaccount.gbl_user_id", '=', "$typesuser.id")
+                ->join($typesentity, "$typesaccount.gbl_entity_id", '=', "$typesentity.id")
+                ->select("$typesallow.id as gbl_org_structure_allow_id", "$typesuser.id as gbl_account_user_id ", "$typesuser.username", "$typesentity.entity_name")
+                ->get();
 
             $item->admission =
             DB::table($typesadm)
                 ->join($typesadmtr, "$typesadm.id", '=', "$typesadmtr.id")
                 ->where("$typesadmtr.lang", '=', 'es_CO')
-                ->where("$typesadm.gbl_org_structure_id", '=', "$iddata")
+                ->where("$typesadm.gbl_org_structure_id", '=', "$idsede")
                 ->select("$typesadmtr.*", "$typesadm.created_at", "$typesadm.updated_at", "$typesadm.gbl_status_id", "$typesadm.gbl_org_structure_id")
                 ->orderBy('id')
                 ->get();
 
             foreach ($item->admission as $itemAdm) {
-                $iddata = $itemAdm->id;
+                $idadmission = $itemAdm->id;
                 $itemAdm->attention =
                 DB::table($typesate)
                     ->join($typesatetr, "$typesate.id", '=', "$typesatetr.id")
                     ->join($typesadmate, "$typesate.id", '=', "$typesadmate.gbl_attention_point_id")
                     ->where("$typesatetr.lang", '=', 'es_CO')
-                    ->where("$typesadmate.gbl_admission_point_id", '=', "$iddata")
+                    ->where("$typesadmate.gbl_admission_point_id", '=', "$idadmission")
                     ->select("$typesatetr.*", "$typesate.created_at", "$typesate.updated_at", "$typesate.gbl_status_id", "$typesate.gbl_org_structure_id", "$typesadmate.gbl_admission_point_id")
                     ->orderBy('id')
                     ->get();
+
+                foreach ($itemAdm->attention as $itemAtt) {
+                    $idattention = $itemAtt->id;
+                    $itemAtt->permission =
+                    DB::table($typesallowAttention)
+                        ->where('gbl_attention_point_id', $idattention)
+                        ->join($typesaccount, "$typesallowAttention.gbl_account_user_id", '=', "$typesaccount.id")
+                        ->join($typesuser, "$typesaccount.gbl_user_id", '=', "$typesuser.id")
+                        ->join($typesentity, "$typesaccount.gbl_entity_id", '=', "$typesentity.id")
+                        ->select("$typesallowAttention.id as gbl_attention_point_allow_id", "$typesuser.id as gbl_account_user_id ", "$typesuser.username", "$typesentity.entity_name")
+                        ->get();
+                }
+
             }
 
-        }
-
-        foreach ($data as $item) {
-            $iddata = $item->id;
-            $item->permission =
-            DB::table($typesallow)
-                ->where('gbl_org_structure_id', $iddata)
-                ->join($typesaccount, "$typesallow.gbl_account_user_id", '=', "$typesaccount.id")
-                ->join($typesuser, "$typesaccount.gbl_user_id", '=', "$typesuser.id")
-                ->join($typesentity, "$typesaccount.gbl_entity_id", '=', "$typesentity.id")
-                ->select("$typesuser.id", "$typesuser.username", "$typesentity.id", "$typesentity.entity_name")
-                ->get();
         }
 
         return response()->json($data);
@@ -340,6 +373,64 @@ class GblOrgStructureController extends Controller
         ]);
 
         return $request;
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function updatePermission(Request $request)
+    {
+        $typesallow = 'gbl_org_structure_allow';
+
+        $data = $request->items;
+
+        foreach ($data as $index => $item) {
+            $data[$index]['gbl_org_structure_allow_id'] =
+            DB::table($typesallow)->insertGetId([
+                'gbl_org_structure_id' => $request->id,
+                'gbl_account_user_id' => $item['gbl_account_user_id'],
+                'gbl_status_id' => '1',
+                'created_at' => NOW(),
+                'updated_at' => NOW(),
+                'created_by' => 1,
+            ]);
+
+        }
+
+        return response()->json([
+            'id' => $request->id,
+            'items' => $data,
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function updatePermissionAttention(Request $request)
+    {
+        $typesallow = 'gbl_attention_point_allow';
+
+        $data = $request->items;
+
+        foreach ($data as $index => $item) {
+            $data[$index]['gbl_attention_point_allow_id'] =
+            DB::table($typesallow)->insertGetId([
+                'gbl_attention_point_id' => $request->id,
+                'gbl_account_user_id' => $item['gbl_account_user_id'],
+                'gbl_status_id' => '1',
+                'created_at' => NOW(),
+                'updated_at' => NOW(),
+                'created_by' => 1,
+            ]);
+
+        }
+
+        return response()->json([
+            'id' => $request->id,
+            'items' => $data,
+            'attention' => $request->attention,
+        ]);
     }
 
 }
