@@ -45,3 +45,8 @@ Route::post('/permission', 'GblOrgStructureController@updatePermission');
 Route::delete('/permission/{id}', 'GblOrgStructureController@deletePermission');
 Route::post('/permissionAttention', 'GblOrgStructureController@updatePermissionAttention');
 Route::delete('/permissionAttention/{id}', 'GblOrgStructureController@deletePermissionAttention');
+
+Route::get('catalogDocument', 'GblCatalogDocumentController@get');
+Route::get('documentType', 'GblCatalogDocumentController@getDocumentType');
+Route::post('catalogDocument', 'GblCatalogDocumentController@store');
+Route::match(['put'], 'catalogDocument/{id}', 'GblCatalogDocumentController@edit');
